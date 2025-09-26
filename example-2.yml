@@ -1,0 +1,27 @@
+---
+- hosts: webservers
+  user: ansible
+  become: true
+  connection: ssh
+  tasks:
+  
+     - name: Install Java in Host Machines
+       action: yum pkg=java-17-amazon-corretto state=present
+
+     - name: Install Python in Host Machines
+       action: yum pkg=python3 state=present
+
+     - name: Install WebServer in Host Machines
+       action: yum pkg=httpd state=present
+
+     - name: Install MySql in Host Machines
+       action: yum  pkg=mariadb state=present
+      
+     - name: Start WebServer in Host
+       action: service name=httpd state=started
+
+     - name: Stop WebServer in host
+       action: service name=httpd state=stopped
+
+     - name: Restart WebServer in host
+       action: service name=httpd state=restart
