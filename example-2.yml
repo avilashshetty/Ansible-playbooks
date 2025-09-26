@@ -24,4 +24,4 @@
        action: service name=httpd state=stopped
 
      - name: Restart WebServer in host
-       action: service name=httpd state=restart
+       action: service name=httpd state=restarted
