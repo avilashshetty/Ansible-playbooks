@@ -15,7 +15,7 @@
        action: yum pkg=httpd state=present
 
      - name: Install MySql in Host Machines
-       action: yum  pkg=mariadb state=present
+       action: yum  pkg=mariadb105 state=present
       
      - name: Start WebServer in Host
        action: service name=httpd state=started
