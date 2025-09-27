@@ -1,28 +1,37 @@
 ---
-- name: Conditionally install packages
-  hosts: webservers
+- name: Conditionally install packages if not present
+  hosts: all
   become: yes
-  gather_facts: yes
-
   vars:
-    packages_to_check:
-      - git
-      - java
-      - python3
-
+    packages:
+      - name: git
+        check: "which git"
+      - name: java-11-openjdk
+        check: "java -version"
+      - name: python3
+        check: "python3 --version"
+ 
   tasks:
-
-    - name: Check if package is installed
-      shell: "rpm -q {{ item }}"
-      register: pkg_status
-      ignore_errors: yes
-      loop: "{{ packages_to_check }}"
-
-    - name: Install missing packages
-      yum:
-        name: "{{ item.item }}"
+    - name: Check if {{ item.name }} is installed
+      shell: "{{ item.check }}"
+      register: check_result
+      ignore_errors: true
+      loop: "{{ packages }}"
+      loop_control:
+        label: "{{ item.name }}"
+ 
+    - name: Install {{ item.item.name }} if not installed
+      dnf:
+        name: "{{ item.item.name }}"
         state: present
       when: item.rc != 0
-      loop: "{{ pkg_status.results }}"
+      loop: "{{ check_result.results }}"
       loop_control:
-        label: "{{ item.item }}"
+        label: "{{ item.item.name }}"
+ 
+    - name: Confirm installation complete
+      debug:
+        msg: "{{ item.item.name }} is installed or was just installed."
+      loop: "{{ check_result.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
